@@ -7,9 +7,14 @@ from stage1 import (
     calculate_subnets
 )
 from stage2 import (
+    get_network_cidr as get_network_s2,
     get_number_of_subnets as get_subnets_s2,
-    calculate_subnets_extended,
-    get_network_cidr,
+    calculate_subnets_extended
+)
+from stage3 import (
+    get_network_cidr as get_network_s3,
+    get_number_of_subnets as get_subnets_s3,
+    calculate_subnets_arbitrary
 )
 
 
@@ -18,7 +23,8 @@ def main() -> None:
     print("=== Subnet Calculator ===")
     print("\nStage 1: Symmetric subnetting for /24 networks")
     print("Stage 2: Extended subnetting for /8, /16 and /24 networks")
-    stage = int(input("\nChoose a stage (1 or 2): "))
+    print("Stage 3: Arbitrary prefix subnetting for any prefix (1-30)")
+    stage = int(input("\nChoose a stage (1, 2 or 3): "))
 
     if stage == 1:
         print("\n--- Stage 1: Symmetric Subnetting ---")
@@ -36,10 +42,24 @@ def main() -> None:
 
     if stage == 2:
         print("\n--- Stage 2: Extended Subnetting ---")
-        base_network, prefix = get_network_cidr()
+        base_network, prefix = get_network_s2()
         number_of_subnets = get_subnets_s2()
 
         max_hosts, new_mask, subnets = calculate_subnets_extended(base_network, prefix, number_of_subnets)
+
+        print(f"\nMaximum hosts per subnet: {max_hosts}")
+        print(f"New subnet mask:          {new_mask}")
+        print()
+        for i, subnet in enumerate(subnets, start=1):
+            print(f"  {i}. Network: {subnet}")
+        print("\n--- Calculation complete ---")
+
+    if stage == 3:
+        print("\n--- Stage 3: Arbitrary Prefix Subnetting ---")
+        base_network, prefix = get_network_s3()
+        number_of_subnets = get_subnets_s3(prefix)
+
+        max_hosts, new_mask, subnets = calculate_subnets_arbitrary(base_network, prefix, number_of_subnets)
 
         print(f"\nMaximum hosts per subnet: {max_hosts}")
         print(f"New subnet mask:          {new_mask}")
