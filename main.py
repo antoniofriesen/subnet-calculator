@@ -1,7 +1,7 @@
 # main.py - Entry point for the subnet calculator
 # Author: Antonio Friesen
 
-from calculator import get_base_network_ip, calculate_subnets, get_number_of_subnets
+from stage1 import get_base_network_ip, calculate_subnets, get_number_of_subnets
 
 
 def main() -> None:
