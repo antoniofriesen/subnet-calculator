@@ -1,8 +1,17 @@
 # main.py - Entry point for the subnet calculator
 # Author: Antonio Friesen
 
-from stage1 import get_base_network_ip, calculate_subnets, get_number_of_subnets
-from stage2 import get_prefix, calculate_subnets_extended
+from stage1 import (
+    get_base_network_ip as get_ip_s1,
+    get_number_of_subnets as get_subnets_s1,
+    calculate_subnets
+)
+from stage2 import (
+    get_base_network_ip as get_ip_s2,
+    get_number_of_subnets as get_subnets_s2,
+    get_prefix,
+    calculate_subnets_extended
+)
 
 
 def main() -> None:
@@ -14,8 +23,8 @@ def main() -> None:
 
     if stage == 1:
         print("\n--- Stage 1: Symmetric Subnetting ---")
-        base_network = get_base_network_ip()
-        number_of_subnets = get_number_of_subnets()
+        base_network = get_ip_s1()
+        number_of_subnets = get_subnets_s1()
 
         max_hosts, new_mask, subnets = calculate_subnets(base_network, number_of_subnets)
 
@@ -28,9 +37,9 @@ def main() -> None:
 
     if stage == 2:
         print("\n--- Stage 2: Extended Subnetting ---")
-        base_network = get_base_network_ip()
+        base_network = get_ip_s2()
         prefix = get_prefix()
-        number_of_subnets = get_number_of_subnets()
+        number_of_subnets = get_subnets_s2()
 
         max_hosts, new_mask, subnets = calculate_subnets_extended(base_network, prefix, number_of_subnets)
 
