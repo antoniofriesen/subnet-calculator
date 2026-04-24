@@ -7,10 +7,9 @@ from stage1 import (
     calculate_subnets
 )
 from stage2 import (
-    get_base_network_ip as get_ip_s2,
     get_number_of_subnets as get_subnets_s2,
-    get_prefix,
-    calculate_subnets_extended
+    calculate_subnets_extended,
+    get_network_cidr,
 )
 
 
@@ -37,8 +36,7 @@ def main() -> None:
 
     if stage == 2:
         print("\n--- Stage 2: Extended Subnetting ---")
-        base_network = get_ip_s2()
-        prefix = get_prefix()
+        base_network, prefix = get_network_cidr()
         number_of_subnets = get_subnets_s2()
 
         max_hosts, new_mask, subnets = calculate_subnets_extended(base_network, prefix, number_of_subnets)

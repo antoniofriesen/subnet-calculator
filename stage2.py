@@ -63,16 +63,21 @@ def calculate_subnets_extended(base_network: str, prefix: int, number_of_subnets
         return calculate_subnets(base_network, number_of_subnets)
 
 
-def get_base_network_ip() -> str:
-    """Reads an IPv4 base network address from the user"""
+def get_network_cidr() -> tuple:
+    """Reads the network CIDR"""
+    # 1. read input in format "ip/prefix" (e.g. "192.168.1.0/24")
     while True:
         try:
-            base_network = input("Please enter the base network IPv4 address: ")
-            if validate_ip(base_network):
-                return base_network
-            print("Invalid base network IPv4 address!")
+            network_cidr = input("Please enter a valid the network CIDR: ")
+            # 2. validate cidr with validate_cidr()
+            if validate_cidr(network_cidr):
+                # 3. if valid: split on "/" and return (ip, prefix) as tuple
+                ip, prefix = network_cidr.split("/")
+                return ip, int(prefix)
+            # 4. if invalid: print error message and ask again
+            print("Please enter a valid network CIDR!")
         except ValueError:
-            print("Please enter a valid base network IPv4 address!")
+            print("Please enter a valid network CIDR!")
 
 
 def get_number_of_subnets() -> int:
@@ -87,16 +92,43 @@ def get_number_of_subnets() -> int:
             print("Please enter a valid number of subnets!")
 
 
-def get_prefix() -> int:
-    """Reads the desired prefix (8/16/24) from user"""
-    while True:
-        try:
-            prefix = int(input("Please enter the prefix (8/16/24): "))
-            if validate_prefix(prefix):
-                return prefix
-            print("Invalid prefix!")
-        except ValueError:
-            print("Please enter the integer 8 or 16 or 24!")
+def validate_cidr(cidr: str) -> bool:
+    """Validates the network CIDR"""
+    # 1. trim input
+    trimmed_cidr = cidr.strip()
+
+    # 2. check if "/" exists in input
+    if "/" not in trimmed_cidr:
+        return False
+
+    # 3. split on "/" into ip and prefix parts
+    ip, prefix = trimmed_cidr.split("/")
+
+    # 4. validate ip part with validate_ip()
+    if not validate_ip(ip):
+        return False
+
+    # 5. validate prefix part with validate_prefix()
+    try:
+        if not validate_prefix(int(prefix)):
+            return False
+    except ValueError:
+        return False
+
+    # 6. check if ip matches prefix (e.g. /24 -> last octet must be 0)
+    split_ip = ip.split(".")
+    if int(prefix) == 8 and (split_ip[1] != "0" or split_ip[2] != "0" or split_ip[3] != "0"):
+        return False
+
+    if int(prefix) == 16 and (split_ip[2] != "0" or split_ip[3] != "0"):
+        return False
+
+    if int(prefix) == 24 and split_ip[3] != "0":
+        return False
+
+    # 7. return True if valid, False otherwise
+    return True
+
 
 def validate_ip(ip: str) -> bool:
     """Validates ip address"""
@@ -121,6 +153,15 @@ def validate_ip(ip: str) -> bool:
 
     # 5. return True if valid, False otherwise
     return True
+
+
+def validate_network_cidr() -> tuple:
+    """Validates the network CIDR"""
+    # 1. read input in format "ip/prefix" (e.g. "192.168.1.0/24")
+    # 2. validate cidr with validate_cidr()
+    # 3. if valid: split on "/" and return (ip, prefix) as tuple
+    # 4. if invalid: print error message and ask again
+    # 5. loop until valid input
 
 
 def validate_number_subnets(number_subnets: int) -> bool:
