@@ -1,4 +1,4 @@
-# calculator.py - Core functions for subnet calculation
+# stage1.py - Core functions for subnet calculation
 # Author: Antonio Friesen
 
 import math
@@ -6,7 +6,7 @@ import math
 
 def get_base_network_ip() -> str:
     """Reads an IPv4 base network address from the user"""
-    return input("Please enter the base network (/24) IPv4 address: ")
+    return input("Please enter the base network IPv4 address: ")
 
 
 def get_number_of_subnets() -> int:
