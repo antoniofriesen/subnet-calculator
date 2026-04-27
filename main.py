@@ -16,6 +16,12 @@ from stage3 import (
     get_number_of_subnets as get_subnets_s3,
     calculate_subnets_arbitrary
 )
+from stage4 import (
+    get_network_cidr as get_network_s4,
+    get_number_of_networks,
+    get_hosts_per_network,
+    calculate_vlsm
+)
 
 
 def main() -> None:
@@ -24,7 +30,8 @@ def main() -> None:
     print("\nStage 1: Symmetric subnetting for /24 networks")
     print("Stage 2: Extended subnetting for /8, /16 and /24 networks")
     print("Stage 3: Arbitrary prefix subnetting for any prefix (1-30)")
-    stage = int(input("\nChoose a stage (1, 2 or 3): "))
+    print("Stage 4: VLSM - Variable Length Subnet Masking")
+    stage = int(input("\nChoose a stage (1, 2, 3 or 4): "))
 
     if stage == 1:
         print("\n--- Stage 1: Symmetric Subnetting ---")
@@ -66,6 +73,19 @@ def main() -> None:
         print()
         for i, subnet in enumerate(subnets, start=1):
             print(f"  {i}. Network: {subnet}")
+        print("\n--- Calculation complete ---")
+
+    if stage == 4:
+        print("\n--- Stage 4: VLSM ---")
+        base_network, prefix = get_network_s4()
+        number_of_networks = get_number_of_networks()
+        hosts_per_network = get_hosts_per_network(number_of_networks)
+
+        subnet_list = calculate_vlsm(base_network, prefix, hosts_per_network)
+
+        print()
+        for i, (network_address, new_mask, max_hosts) in enumerate(subnet_list, start=1):
+            print(f"  {i}. Network: {network_address}  Mask: {new_mask}  Max Hosts: {max_hosts}")
         print("\n--- Calculation complete ---")
 
 
