@@ -7,21 +7,20 @@ from stage1 import (
     calculate_subnets
 )
 from stage2 import (
-    get_network_cidr as get_network_s2,
     get_number_of_subnets as get_subnets_s2,
     calculate_subnets_extended
 )
 from stage3 import (
-    get_network_cidr as get_network_s3,
     get_number_of_subnets as get_subnets_s3,
     calculate_subnets_arbitrary
 )
 from stage4 import (
-    get_network_cidr as get_network_s4,
     get_number_of_networks,
     get_hosts_per_network,
     calculate_vlsm
 )
+
+from utils import get_network_cidr
 
 
 def main() -> None:
@@ -49,7 +48,7 @@ def main() -> None:
 
     if stage == 2:
         print("\n--- Stage 2: Extended Subnetting ---")
-        base_network, prefix = get_network_s2()
+        base_network, prefix = get_network_cidr()
         number_of_subnets = get_subnets_s2()
 
         max_hosts, new_mask, subnets = calculate_subnets_extended(base_network, prefix, number_of_subnets)
@@ -63,7 +62,7 @@ def main() -> None:
 
     if stage == 3:
         print("\n--- Stage 3: Arbitrary Prefix Subnetting ---")
-        base_network, prefix = get_network_s3()
+        base_network, prefix = get_network_cidr()
         number_of_subnets = get_subnets_s3(prefix)
 
         max_hosts, new_mask, subnets = calculate_subnets_arbitrary(base_network, prefix, number_of_subnets)
@@ -77,7 +76,7 @@ def main() -> None:
 
     if stage == 4:
         print("\n--- Stage 4: VLSM ---")
-        base_network, prefix = get_network_s4()
+        base_network, prefix = get_network_cidr()
         number_of_networks = get_number_of_networks()
         hosts_per_network = get_hosts_per_network(number_of_networks)
 
