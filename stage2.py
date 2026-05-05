@@ -4,6 +4,7 @@
 import math
 
 from stage1 import calculate_subnets
+from validators import validate_ip
 
 
 def calculate_subnets_extended(base_network: str, prefix: int, number_of_subnets: int) -> tuple:
@@ -63,23 +64,6 @@ def calculate_subnets_extended(base_network: str, prefix: int, number_of_subnets
         return calculate_subnets(base_network, number_of_subnets)
 
 
-def get_network_cidr() -> tuple:
-    """Reads the network CIDR"""
-    # 1. read input in format "ip/prefix" (e.g. "192.168.1.0/24")
-    while True:
-        try:
-            network_cidr = input("Please enter a valid the network CIDR: ")
-            # 2. validate cidr with validate_cidr()
-            if validate_cidr(network_cidr):
-                # 3. if valid: split on "/" and return (ip, prefix) as tuple
-                ip, prefix = network_cidr.split("/")
-                return ip, int(prefix)
-            # 4. if invalid: print error message and ask again
-            print("Please enter a valid network CIDR!")
-        except ValueError:
-            print("Please enter a valid network CIDR!")
-
-
 def get_number_of_subnets() -> int:
     """Reads the number of desired subnets from the user"""
     while True:
@@ -128,40 +112,6 @@ def validate_cidr(cidr: str) -> bool:
 
     # 7. return True if valid, False otherwise
     return True
-
-
-def validate_ip(ip: str) -> bool:
-    """Validates ip address"""
-    # 1. trim input
-    trimmed_ip = ip.strip()
-    if trimmed_ip == "0.0.0.0":
-        return False
-
-    # 2. split on "."
-    split_ip = trimmed_ip.split(".")
-
-    # 3. check if exactly 4 parts
-    if len(split_ip) != 4:
-        return False
-
-    # 4. for each part: trim, check if digit, check if 0-255
-    for part in split_ip:
-        if not part.isdigit():
-            return False
-        if  int(part) < 0 or int(part) > 255:
-            return False
-
-    # 5. return True if valid, False otherwise
-    return True
-
-
-def validate_network_cidr() -> tuple:
-    """Validates the network CIDR"""
-    # 1. read input in format "ip/prefix" (e.g. "192.168.1.0/24")
-    # 2. validate cidr with validate_cidr()
-    # 3. if valid: split on "/" and return (ip, prefix) as tuple
-    # 4. if invalid: print error message and ask again
-    # 5. loop until valid input
 
 
 def validate_number_subnets(number_subnets: int) -> bool:

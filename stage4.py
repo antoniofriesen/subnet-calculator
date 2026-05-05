@@ -4,86 +4,17 @@
 # I. Imports
 import math
 
+from utils import (
+    ip_to_int,
+    int_to_ip,
+)
+
 
 # II. Constants
 
 
 # III. Helper/Utilities
-def validate_ip(ip: str) -> bool:
-    """Validates ip address"""
-    # 1. trim input
-    trimmed_ip = ip.strip()
-    if trimmed_ip == "0.0.0.0":
-        return False
 
-    # 2. split on "."
-    split_ip = trimmed_ip.split(".")
-
-    # 3. check if exactly 4 parts
-    if len(split_ip) != 4:
-        return False
-
-    # 4. for each part: trim, check if digit, check if 0-255
-    for part in split_ip:
-        if not part.isdigit():
-            return False
-        if  int(part) < 0 or int(part) > 255:
-            return False
-
-    # 5. return True if valid, False otherwise
-    return True
-
-
-def validate_prefix(prefix: int) -> bool:
-    """Validates ip address"""
-    # 1. check if prefix is in range 1, 31
-    if prefix not in range(1,31):
-        return False
-
-    # 2. return True if valid, False otherwise
-    return True
-
-
-def validate_cidr(cidr: str) -> bool:
-    """Validates the network CIDR"""
-    # 1. trim input
-    trimmed_cidr = cidr.strip()
-
-    # 2. check if "/" exists in input
-    if "/" not in trimmed_cidr:
-        return False
-
-    # 3. split on "/" into ip and prefix parts
-    ip, prefix = trimmed_cidr.split("/")
-    split_ip = ip.split(".")
-
-    # 4. validate ip part with validate_ip()
-    if not validate_ip(ip):
-        return False
-
-    # 5. validate prefix part with validate_prefix()
-    try:
-        if not validate_prefix(int(prefix)):
-            return False
-    except ValueError:
-        return False
-
-    # 6. check if ip matches prefix
-    host_bits = 32 - int(prefix)
-
-    # convert each octet to 32-bit integer
-    octet1 = int(split_ip[0]) * 16777216
-    octet2 = int(split_ip[1]) * 65536
-    octet3 = int(split_ip[2]) * 256
-    octet4 = int(split_ip[3])
-    ip_int = octet1 + octet2 + octet3 + octet4
-
-    # check if last host_bits bits are all 0
-    if ip_int % (2 ** host_bits) != 0:
-        return False
-
-    # 7. return True if valid, False otherwise
-    return True
 
 
 # calculate_next_power_of_two(hosts: int) -> int
@@ -101,21 +32,15 @@ def calculate_next_power_of_two(hosts: int) -> int:
 
 # IV. Core/Business Logic
 # calculate_vlsm(base_network: str, prefix: int, hosts_per_network: list) -> list
-def calculate_vlsm(base_network: str, prefix: int, hosts_per_network: list) ->list:
+def calculate_vlsm(base_network: str, prefix: int, hosts_per_network: list) -> list:
     """Calculates vlsm"""
     # 1. convert base_network to 32-bit integer (current_address)
-    octets = base_network.split(".")
-    octet1 = int(octets[0]) * 16777216
-    octet2 = int(octets[1]) * 65536
-    octet3 = int(octets[2]) * 256
-    octet4 = int(octets[3])
-    base_network_int = octet1 + octet2 + octet3 + octet4
+    base_network_int = ip_to_int(base_network)
 
     # 2. sort hosts_per_network descending
     sorted_hosts = sorted(hosts_per_network, reverse=True)
 
     # 3. for each host requirement:
-    current_address = base_network_int
     subnet_list = []
 
     for host in sorted_hosts:
@@ -146,40 +71,19 @@ def calculate_vlsm(base_network: str, prefix: int, hosts_per_network: list) ->li
             new_mask = f"255.255.255.{octet}"
 
         # d. convert current_address back to ip string
-        octet1 = current_address // 16777216
-        octet2 = (current_address % 16777216) // 65536
-        octet3 = (current_address % 65536) // 256
-        octet4 = current_address % 256
-        network_address = f"{octet1}.{octet2}.{octet3}.{octet4}"
+        network_address = int_to_ip(base_network_int)
 
         # e. append (network_address, mask, max_hosts) to results
         subnet_list.append((network_address, new_mask, subnet_size - 2))
 
         # f. current_address += subnet_size
-        current_address += subnet_size
+        base_network_int += subnet_size
 
     # 4. return results
     return subnet_list
 
 
 # V. Input Functions
-def get_network_cidr() -> tuple:
-    """Reads the network CIDR"""
-    # 1. read input in format "ip/prefix" (e.g. "192.168.1.0/24")
-    while True:
-        try:
-            network_cidr = input("Please enter a valid the network CIDR: ")
-            # 2. validate cidr with validate_cidr()
-            if validate_cidr(network_cidr):
-                # 3. if valid: split on "/" and return (ip, prefix) as tuple
-                ip, prefix = network_cidr.split("/")
-                return ip, int(prefix)
-            # 4. if invalid: print error message and ask again
-            print("Please enter a valid network CIDR!")
-        except ValueError:
-            print("Please enter a valid network CIDR!")
-
-
 # get_number_of_networks() -> int
 def get_number_of_networks() -> int:
     """Reads the number of networks"""
